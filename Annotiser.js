@@ -94,7 +94,7 @@ An.prototype.startAnnotating = function (event) {
 An.prototype.dispatchEvent = function (DOMObj, eventName, data) {
     var event;
     event = new CustomEvent(eventName, data);
-    DOMObj.dispatchEvent(event)
+    DOMObj.dispatchEvent(event);
 
 };
 An.prototype.saveAnnotation = function () {
@@ -102,10 +102,15 @@ An.prototype.saveAnnotation = function () {
         selectionObj = window.getSelection(),
         range = selectionObj.getRangeAt(0),
         annotiserObj = {
-            dataText: selectionObj.focusNode.data.slice(range.startOffset, range.endOffset),
+            dataText: range.extractContents().textContent,
             parentElement: selectionObj.focusNode.parentElement,
-            offset: { start: range.startOffset, end: range.endOffset }
+            offset: { start: range.startOffset, end: range.endOffset },
+            range: range,
+            classtoApply : 'hl-color'
         };
+
+    if(!annotiserObj.dataText) return;  
+
     self.highLight(annotiserObj);
     self.annotations.push(annotiserObj);
     self.dispatchEvent(self.DOMObj, 'Annotised', annotiserObj);
@@ -113,10 +118,12 @@ An.prototype.saveAnnotation = function () {
 
 An.prototype.highLight = function (obj) {
 
-    var strarr = obj.parentElement.innerHTML.split("");
-    strarr.splice(obj.offset.start, 0, '<span style="background-color: #FFC107">');
-    strarr.splice(obj.offset.end + 1, 0, '</span>');
-    obj.parentElement.innerHTML = strarr.join('');
+    var span = document.createElement('span'),
+        classtoApply = obj.classtoApply;
+
+    span.className = classtoApply;
+    span.innerHTML = obj.dataText;
+    obj.range.insertNode(span);
 };
 
 /* Pollyfill for customEvent*/
