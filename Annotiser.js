@@ -4,6 +4,7 @@ var Annotiser = function (DOMObj, attachEvent) {
     if (attachEvent) {
         this.attachEvents(DOMObj);
     }
+    this.addAnnotationWidgetsToDOM(DOMObj)
     return this;
 };
 var An = Annotiser;
@@ -29,6 +30,10 @@ var isMobile = {
     }
 };
 
+An.prototype.addAnnotationWidgetsToDOM = function (obj) {
+      
+}
+
 An.prototype.attachEvents = function (DOMObj) {
 
     this.attachMouseDown(DOMObj);
@@ -46,21 +51,21 @@ An.prototype.attachMouseDown = function (obj, callback) {
     obj.addEventListener('mousedown', callback, false);
 
 };
-An.prototype.attachMouseMove = function(obj,callback){
+An.prototype.attachMouseMove = function (obj, callback) {
     var self = this;
     if (!callback) {
         callback = function (event) {
-            if(self.isSelectionStart)
-            self.isSelecting = true;
+            if (self.isSelectionStart)
+                self.isSelecting = true;
         }
     }
     obj.addEventListener('mousemove', callback, false);
 }
 An.prototype.attachMouseUp = function (obj, callback) {
-    var self = this;    
+    var self = this;
     if (!callback) {
         callback = function (event) {
-            self.isSelectionStart=false;
+            self.isSelectionStart = false;
             if (self.isSelecting) {
                 self.startAnnotating(event);
             }
