@@ -1,9 +1,9 @@
-var Annotiser = function (DOMObj, attachEvent) {
+var Annotiser = function (DOMObj) {
     this.DOMObj = DOMObj;
     this.annotations = [];
-    if (attachEvent) {
-        this.attachEvents(DOMObj);
-    }
+    
+    this.attachEvents(DOMObj);
+    
     this.addAnnotationWidgetsToDOM(DOMObj)
     return this;
 };
@@ -68,6 +68,7 @@ An.prototype.attachMouseUp = function (obj, callback) {
             self.isSelectionStart = false;
             if (self.isSelecting) {
                 self.startAnnotating(event);
+                self.isSelecting = false;
             }
         }
     }
@@ -91,20 +92,24 @@ An.prototype.startAnnotating = function (event) {
     self.dispatchEvent(self.DOMObj, 'AnnotiserWindowAppeared', event);
     self.saveAnnotation();
 };
+
 An.prototype.dispatchEvent = function (DOMObj, eventName, data) {
     var event;
     event = new CustomEvent(eventName, data);
     DOMObj.dispatchEvent(event);
 
 };
+
 An.prototype.saveAnnotation = function () {
     var self = this,
         selectionObj = window.getSelection(),
         range = selectionObj.getRangeAt(0),
+        startOffset = range.startOffset,
+        endOffset = range.endOffset,
         annotiserObj = {
             dataText: range.extractContents().textContent,
             parentElement: selectionObj.focusNode.parentElement,
-            offset: { start: range.startOffset, end: range.endOffset },
+            offset: { start: startOffset, end: endOffset },
             range: range,
             classtoApply : 'hl-color'
         };
